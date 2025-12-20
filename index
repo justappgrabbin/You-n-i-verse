@@ -1,0 +1,30 @@
+@"
+services:
+  tinyllama:
+    image: debian:bookworm-slim
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "
+      apt-get update && apt-get install -y curl &&
+      curl -L -o /usr/local/bin/llamafile https://github.com/Mozilla-Ocho/llamafile/releases/download/0.8.4/llamafile-0.8.4 &&
+      chmod +x /usr/local/bin/llamafile &&
+      curl -L -o /tinyllama.gguf https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf &&
+      /usr/local/bin/llamafile -m /tinyllama.gguf --host 0.0.0.0 --port 8080 --nobrowser -ngl 999
+      "
+    restart: unless-stopped
+
+  phi3:
+    image: debian:bookworm-slim
+    ports:
+      - "8081:8081"
+    command: >
+      bash -c "
+      apt-get update && apt-get install -y curl &&
+      curl -L -o /usr/local/bin/llamafile https://github.com/Mozilla-Ocho/llamafile/releases/download/0.8.4/llamafile-0.8.4 &&
+      chmod +x /usr/local/bin/llamafile &&
+      curl -L -o /phi3.gguf https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf &&
+      /usr/local/bin/llamafile -m /phi3.gguf --host 0.0.0.0 --port 8081 --nobrowser -ngl 999
+      "
+    restart: unless-stopped
+"@ | Out-File -FilePath docker-compose.yml -Encoding UTF8
